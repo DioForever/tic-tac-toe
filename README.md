@@ -14,9 +14,9 @@
   - ### 2.1 Produkt
     Produkt bude vyvíjen v jazyku C# a bude spouštěn jako .exe soubor.
   - ### 2.2 Funkce
-    Hra zahrnuje možnost volby velikosti hracího pole (3x3, 4x4, 5x5) a možnost hraní proti jinému hráči nebo proti počítači (botovi).
+    Hra zahrnuje možnost volby velikosti hracího pole (3x3, 4x4, 5x5) a možnost hraní proti jinému hráči lokálně nebo proti počítači (botovi).
   - ### 2.3 Uživatelské skupiny
-    Uživatelé budou mít možnost hrát piškvorky jako **"1v1"** lokální hráči proti sobě nebo jako **"1vBot"** proti počítači.
+    Uživatelé budou mít možnost hrát piškvorky jako **"Local"** lokální hráči proti sobě nebo jako **"Bot"** proti počítači.
   - ### 2.4 Provozní prostředí
     Aplikace je navržena pro desktopové počítače.
   - ### 2.5 Uživatelské prostředí
@@ -42,7 +42,7 @@
   
 - ## 5. Nefunkční požadavky
   - ### 5.1 Výkonnost
-    - Odezva a provádění tahů ve hře s největší odezvou 1s.
+    - Odezva a provádění tahů ve hře, s největší odezvou 1s.
   - ### 5.2 Bezpečnost
     - Bezpečnost není primárně důležitá, jelikož se jedná o offline aplikaci a je nám jedno jestli hráči podváději proti svým přítelům či botovi.
   - ### 5.3 Spolehlivost
