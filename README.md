@@ -4,7 +4,7 @@
   - ### 1.1 Účel
     - Vytvoření aplikace pro hraní piškvorek s možností volby velikosti hracího pole a možností hrát lokálně proti někomu jinému nebo proti umělé inteligenci (botovi).
   - ### 1.2 Konvence dokumentu
-    - Exe soubor v jazyku C#.
+    - Tituly jsou veliké podle důležitosti "#", jsou tři velikosti využiti od největšího po nejmenší. Používá se zvýraznění textu pro zvýraznění pojmenování.  
   - ### 1.3 Cílová skupina
     - Tento dokument je určený pro vývojáře, kteří chtějí vytvořit piškvorky aplikaci.
   - ### 1.4 Kontakty
