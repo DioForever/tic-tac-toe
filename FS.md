@@ -43,5 +43,5 @@
       - Při dohrané hře se objeví nový, který píše text a tlačítko "CONFIRM", který přesune hráče zpátky do hlavního menu.
       - <img src="./images/GameWon.png" width="600" height="300">
     - #### 3.2.4 Error
-      - Při Erroru hry hře se objeví nový text "Something went wrong" a talčítko "CONFIRM", které zmizí po kliknutí tlačítka.
+      - Při Erroru hry se přesuneme do Hlavního menu a objeví se nový text "Something went wrong" a talčítko "CONFIRM", které zmizí po kliknutí tlačítka.
       - <img src="./images/Error.png" width="600" height="300">
