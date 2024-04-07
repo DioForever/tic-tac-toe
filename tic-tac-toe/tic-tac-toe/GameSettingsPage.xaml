@@ -36,21 +36,21 @@
         
         <StackPanel Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="4" Background="#FF456C75" HorizontalAlignment="Center" VerticalAlignment="Center" Width="548">
             <Label>
-                <CheckBox Checked="CheckBox_Checked_1" Background="#FF35A4BC" Content="3X3" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
+                <CheckBox x:Name="x3" Checked="CheckBox_Checked_1" Background="#FF35A4BC" Content="3X3" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="5" ScaleY="5" />
                     </CheckBox.LayoutTransform>
                 </CheckBox>
             </Label>
             <Label>
-                <CheckBox Checked="CheckBox_Checked_1" Background="#FF35A4BC" Content="4X4" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
+                <CheckBox x:Name="x4" Checked="CheckBox_Checked_2" Background="#FF35A4BC" Content="4X4" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="5" ScaleY="5" />
                     </CheckBox.LayoutTransform>
                 </CheckBox>
             </Label>
             <Label>
-                <CheckBox Checked="CheckBox_Checked_1" Background="#FF35A4BC" Content="5X5" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
+                <CheckBox x:Name="x5" Checked="CheckBox_Checked_3" Background="#FF35A4BC" Content="5X5" Height="15" Width="104" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="5" ScaleY="5" />
                     </CheckBox.LayoutTransform>
@@ -58,8 +58,8 @@
             </Label>
         </StackPanel>
 
-        <Button Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Background="#456C75" Margin="99,0,100,23" FontSize="48">PLAY</Button>
-        
+        <Button Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Background="#456C75" Margin="99,0,100,23" FontSize="48" Click="Button_Click">PLAY</Button>
 
+        <Frame x:Name="SettingsFrame" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Grid.RowSpan="9"/>
     </Grid>
 </Page>

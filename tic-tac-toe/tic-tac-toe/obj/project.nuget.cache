@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "NdZY25gxW6ZYCdkybeInhNOjRSxYPiXKMRTT4ki97wtcIq7G8FMBk377m2bZeqI806waSWV+hlFUbYADegexEQ==",
+  "dgSpecHash": "rrzjRJiAcfVVcpeT9e2epO34nPjHP66Jflw/DMccO3l93c1TGl13c6Ua/6ztV4cS2BvdSTXkr+MWLSG4V0J0gA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\vasko\\VisualCode\\MVOP\\homeworks\\tic-tac-toe\\tic-tac-toe\\tic-tac-toe\\tic-tac-toe.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\vasko\\VisualCode\\MVOP\\tic-tac-toe\\tic-tac-toe\\tic-tac-toe.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\vasko\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.28\\microsoft.windowsdesktop.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\vasko\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.28\\microsoft.netcore.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\vasko\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.28\\microsoft.aspnetcore.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\vasko\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.28\\microsoft.netcore.app.host.win-x64.6.0.28.nupkg.sha512"
+  ],
   "logs": []
 }

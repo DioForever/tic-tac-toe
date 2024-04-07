@@ -31,8 +31,8 @@
         <Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="7" Background="#456C75"></Border>
 
         <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="Transparent" Foreground="White" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-23,0,0" Width="590">TIC-TAC-TOE</Label>
-        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Background="#FF456C75" Content="LOCAL 1v1" Margin="0,24,0,24" BorderThickness="1,1,1,1" FontSize="48" Foreground="White" HorizontalAlignment="Center" Width="548" Grid.RowSpan="2" Click="MoveToGame"/>
-        <Button Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Background="#FF456C75" Content="1vBOT" Margin="0,24,0,24" BorderThickness="1,1,1,1" FontSize="48" Foreground="White" HorizontalAlignment="Center" Width="548" Grid.RowSpan="2" Click="MoveToGame"/>
+        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Background="#FF456C75" Content="LOCAL 1v1" Margin="0,24,0,24" BorderThickness="1,1,1,1" FontSize="48" Foreground="White" HorizontalAlignment="Center" Width="548" Grid.RowSpan="2" Click="MoveToGameLocal"/>
+        <Button Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Background="#FF456C75" Content="1vBOT" Margin="0,24,0,24" BorderThickness="1,1,1,1" FontSize="48" Foreground="White" HorizontalAlignment="Center" Width="548" Grid.RowSpan="2" Click="MoveToGameBot"/>
 
         <Frame x:Name="MainFrame" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Grid.RowSpan="9"/>
 
