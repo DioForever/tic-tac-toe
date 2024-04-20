@@ -35,5 +35,8 @@
 
         <Border Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="4" Background="#FF373739"></Border>
         <Grid x:Name="gameGrid" Grid.Column="2" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
+        <Grid x:Name="announcement" Grid.Column="2" Grid.Row="3" Grid.RowSpan="4" Grid.ColumnSpan="3"></Grid>
+
+        <Frame x:Name="GameFrame" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Grid.RowSpan="9"/>
     </Grid>
 </Page>

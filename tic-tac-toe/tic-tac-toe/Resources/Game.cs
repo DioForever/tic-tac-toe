@@ -5,42 +5,33 @@ namespace tic_tac_toe.Resources
     internal class Game
     {
         // The board is represented as a 2D array
-        private const int winLength = 3;
-        public byte[,] board;
-        private int boardSize;
+        public char[,] board;
+        public int size;
 
         public Game(int size)
         {
-            boardSize = size;
-            board = new byte[size, size];
-            InitializeBoard();
-        }
+            board = new char[size, size];
 
-        public void InitializeBoard()
-        {
-            for (int i = 0; i < boardSize; i++)
+            this.size = size;
+
+            for (var i = 0; i < size; i++)
             {
-                for (int j = 0; j < boardSize; j++)
+                for (var j = 0; j < size; j++)
                 {
-                    board[i, j] = 0;
+                    board[i, j] = '-';
                 }
             }
+
+
         }
 
-
-
-        public void MakeMove(int row, int col, int player)
+        public bool CheckIfDraw()
         {
-            board[row, col] = (byte)player;
-        }
-
-        public bool BoardFull()
-        {
-            for (int i = 0; i < boardSize; i++)
+            for (var i = 0; i < size; i++)
             {
-                for (int j = 0; j < boardSize; j++)
+                for (var j = 0; j < size; j++)
                 {
-                    if (board[i, j] == 0)
+                    if (board[i, j] == '-')
                     {
                         return false;
                     }
@@ -49,189 +40,144 @@ namespace tic_tac_toe.Resources
             return true;
         }
 
-        public int GameWon()
+
+        public int CheckWhoWins(char[,] board, char forWho)
         {
-            // Check rows for a win
-            for (int y = 0; y < boardSize; y++)
+            int size = board.GetLength(0);
+            int score = 0;
+
+            // Check rows
+            for (int row = 0; row < size; row++)
             {
-                if (board[y, 0] != 0 &&
-                    board[y, 0] == board[y, 1] &&
-                    board[y, 1] == board[y, 2])
+                bool win = true;
+                for (int col = 0; col < size; col++)
                 {
-                    return board[y, 0]; // Return the winning player
+                    if (board[row, col] != forWho)
+                    {
+                        win = false;
+                        break;
+                    }
+                }
+                if (win)
+                {
+                    score++;
+                    break; // Only one winning line needed for score
                 }
             }
 
-            // Check columns for a win
-            for (int x = 0; x < boardSize; x++)
+            // Check columns
+            for (int col = 0; col < size; col++)
             {
-                if (board[0, x] != 0 &&
-                    board[0, x] == board[1, x] &&
-                    board[1, x] == board[2, x])
+                bool win = true;
+                for (int row = 0; row < size; row++)
                 {
-                    return board[0, x]; // Return the winning player
+                    if (board[row, col] != forWho)
+                    {
+                        win = false;
+                        break;
+                    }
+                }
+                if (win)
+                {
+                    score++;
+                    break; // Only one winning line needed for score
                 }
             }
 
-            // Check diagonals for a win
-            if (board[0, 0] != 0 &&
-                board[0, 0] == board[1, 1] &&
-                board[1, 1] == board[2, 2])
+            // Check main diagonal
+            bool mainDiagonalWin = true;
+            for (int i = 0; i < size; i++)
             {
-                return board[0, 0]; // Return the winning player
-            }
-
-            if (board[0, 2] != 0 &&
-                board[0, 2] == board[1, 1] &&
-                board[1, 1] == board[2, 0])
-            {
-                return board[0, 2]; // Return the winning player
-            }
-
-            return 0; // No player has won yet
-        }
-
-
-        private bool CheckRow(int row, int column, int player)
-        {
-            int count = 0;
-            for (int i = column; i < boardSize; i++)
-            {
-                if (board[row, i] == player)
+                if (board[i, i] != forWho)
                 {
-                    count++;
+                    mainDiagonalWin = false;
+                    break;
                 }
             }
-            if (count == winLength) return true;
-            return false;
-        }
+            if (mainDiagonalWin) score++; // Player wins
 
-        private bool CheckColumn(int row, int column, int player)
-        {
-            int count = 0;
-            for (int i = row; i < boardSize; i++)
+            // Check anti-diagonal
+            bool antiDiagonalWin = true;
+            for (int i = 0; i < size; i++)
             {
-                if (board[i, column] == player)
+                if (board[i, size - 1 - i] != forWho)
                 {
-                    count++;
+                    antiDiagonalWin = false;
+                    break;
                 }
             }
-            if (count == winLength) return true;
-            return false;
+            if (antiDiagonalWin) score++; // Player wins
+
+            return score; // Return the score
         }
 
-        private bool CheckDiagonal(int row, int column, int player)
+
+        public int Minimax(char[,] board, char forWho, int depth = 1)
         {
-            int count = 0;
-            for (int i = 0; i < boardSize; i++)
+            var score = CheckWhoWins(board, forWho);
+            int depthLimit = 9;
+            if (size == 5) depthLimit = 4;
+            else if (size == 4) depthLimit = 5;
+            if (score != 0 || depth > depthLimit)
             {
-                if (board[i, i] == player)
+                return score;
+            }
+            depth++;
+
+            var bestScore = forWho == 'o' ? int.MinValue : int.MaxValue;
+
+            int CalcBest(int x, int y) => (forWho == 'o' ? x > y : y > x) ? x : y;
+
+            for (var i = 0; i < size; i++)
+            {
+                for (var j = 0; j < size; j++)
                 {
-                    count++;
+                    if (board[i, j] == '-')
+                    {
+                        board[i, j] = forWho;
+                        var currentScore = Minimax(board, forWho == 'o' ? 'x' : 'o', depth);
+                        board[i, j] = '-';
+
+                        bestScore = CalcBest(bestScore, currentScore);
+                    }
                 }
             }
-            if (count == winLength) return true;
-            return false;
+            return bestScore;
         }
 
-        public bool CheckWin(int row, int column, int player)
-        {
-            if (CheckRow(row, column, player) || CheckColumn(row, column, player) || CheckDiagonal(row, column, player))
-            {
-                return true;
-            } 
-            return false;
-        }
 
-        public (int, int) FindBestMove(Game game)
+        public (int, int) GetBestMove()
         {
             int bestScore = int.MinValue;
-            (int, int) bestMove = (0,0);
-            byte[,] bytes = game.board;
+            int moveX = -1;
+            int moveY = -1;
 
-            for (int y = 0; y < boardSize; y++)
+            for (var x = 0; x < size; x++)
             {
-                for (int x = 0; x < boardSize; x++)
+                for (var y = 0; y < size; y++)
                 {
-                    bool open = game.board[y, x] == 0;
-                    if (game.board[y, x] == 0)
+                    if (board[x, y] == '-')
                     {
-                        game.board[y, x] = 2; // Assuming AI is player 2
-                        int score = Minimax(game, 1, 2, true);
-                        game.board[y, x] = 0;
+                        board[x, y] = 'o';
+                        var score = Minimax(board, 'x');
+                        board[x, y] = '-';
+
+                        Console.WriteLine("Score: " + score);
+                        Console.WriteLine("BestScore: " + bestScore);
+
 
                         if (score > bestScore)
                         {
                             bestScore = score;
-                            bestMove = (y, x);
+                            moveX = x;
+                            moveY = y;
                         }
                     }
                 }
             }
 
-            return bestMove;
+            return (moveX, moveY);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="depth"></param>
-        /// <param name="player"></param>
-        /// <param name="mode">True if Maximizing, False if Minimazing</param>
-        /// <returns></returns>
-        static int Minimax(Game game, int depth, byte player, bool isMaximizing)
-        {
-            if(game.GameWon() == 2)
-            {
-                return 10 + depth;
-            }
-            else if(game.GameWon() == 1)
-            {
-                return 10 - depth;
-            }
-            else if(game.BoardFull())
-            {
-                return 10 - depth;
-            }
-
-            if (isMaximizing)
-            {
-                int bestScore = int.MinValue;
-                for (int i = 0; i < game.boardSize; i++)
-                {
-                    for (int j = 0; j < game.boardSize; j++)
-                    {
-                        if (game.board[i, j] == 0)
-                        {
-                            game.board[i, j] = player;
-                            int score = Minimax(game, depth + 1, player, false);
-                            game.board[i, j] = 0;
-                            bestScore = Math.Max(score, bestScore);
-                        }
-                    }
-                }
-                return bestScore;
-            }
-            else
-            {
-                int bestScore = int.MaxValue;
-                for (int i = 0; i < game.boardSize; i++)
-                {
-                    for (int j = 0; j < game.boardSize; j++)
-                    {
-                        if (game.board[i, j] == 0)
-                        {
-                            game.board[i, j] = player;
-                            int score = Minimax(game, depth + 1, player, true);
-                            game.board[i, j] = 0;
-                            bestScore = Math.Min(score, bestScore);
-                        }
-                    }
-                }
-                return bestScore;   
-            }
-
-        }
     }
 }

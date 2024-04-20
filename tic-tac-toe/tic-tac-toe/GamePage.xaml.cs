@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using tic_tac_toe.Resources;
+using System.Diagnostics;
 
 namespace tic_tac_toe
 {
@@ -28,14 +29,25 @@ namespace tic_tac_toe
         public bool playerTurn = true;
 
         private Border[,] borders;
-        private Game game;
-        private byte player = 1;
+
+        private char[,] board;
+        private const char PlayerSymbol = 'x';
+        private const char AISymbol = 'o';
+        private bool AITurn = false;
         public GamePage()
         {
             gameSettings = GameSettings;
 
+            board = new char[gameSettings.size, gameSettings.size];
+            for(int i = 0; i < gameSettings.size; i++)
+            {
+                for (int j = 0; j < gameSettings.size; j++)
+                {
+                    board[i, j] = '-';
+                }
+            }
+
             int size = gameSettings.size;
-            game = new Game(size);
 
             InitializeComponent();
 
@@ -80,9 +92,9 @@ namespace tic_tac_toe
 
                     border.MouseLeftButtonDown += (sender, e) =>
                     {
-                        int clickedRowY = Grid.GetRow(border);
-                        int clickedColumnX = Grid.GetColumn(border);
-                        player = Place(clickedRowY, clickedColumnX, player, border);
+                        int clickedY = Grid.GetRow(border);
+                        int clickedX = Grid.GetColumn(border);
+                        Place(clickedX, clickedY, border);
                     };
 
 
@@ -92,94 +104,324 @@ namespace tic_tac_toe
             }
         }
 
-        public byte Place(int y, int x, byte player, Border border)
+        public char Place(int y, int x, Border border)
         {
-            byte[,] map = game.board;
-            bool taken = (map[y, x] != 0);
-
-            int winner = 0;
-            bool boardFull = false;
-
-            if(taken) return player;
-
-            if (playerTurn && !taken)
+            if (board[y, x] == '-' && !AITurn)
             {
+                // Update the game board with the player's symbol
+                board[y, x] = playerTurn ? PlayerSymbol : AISymbol;
 
-                spawnImageUnderBorder("Resources/CROSS.png", border);
-                game.board[y, x] = player;
-                byte[,] boardS = game.board;
-                player = 2;
+                // Display the player's symbol on the UI
+                string imagePath = playerTurn ? "Resources/CROSS.png" : "Resources/CIRCLE.png";
+                spawnImageUnderBorder(imagePath, border);
 
-                playerTurn = false;
+                // Check for a win or draw
+                if (CheckWin(board, playerTurn ? PlayerSymbol : AISymbol))
+                {
+                    AnnounceWinner(playerTurn ? 1 : -1, false); // Player wins
+                }
+                else if (IsBoardFull(board))
+                {
+                    AnnounceWinner(0, true); // Draw
+                }
+                else
+                {
+                    // Toggle player turn
+                    playerTurn = !playerTurn;
 
-            }
-            else if (!gameSettings.enemyType && !taken)
-            {
+                    if(gameSettings.enemyType) { AITurn = true; MoveAI(); }
+                    char[,] map = board;
+                }
 
-                spawnImageUnderBorder("Resources/CIRCLE.png", border);
-                game.board[y, x] = player;
 
-                player = 1;
-                playerTurn = true;
-            }
-
-            winner = game.GameWon();
-            boardFull = game.BoardFull();
-            AnnounceWinner(winner, boardFull);
-
-            // AI move if enabled
-            if (GameSettings.enemyType)
-            {
-                MoveAI();
-                // use AI to make a move
-                player = 1;
-                playerTurn = true;
-
+                // Return the symbol placed
+                return playerTurn ? PlayerSymbol : AISymbol;
             }
 
-            winner = game.GameWon();
-            boardFull = game.BoardFull();
-            AnnounceWinner(winner, boardFull);
-
-
-            byte[,] b = game.board;
-            return player;
-
+            // If the cell is already taken, return the existing symbol
+            return board[y, x];
         }
+
 
         private void MoveAI()
         {
-            (int, int) move = game.FindBestMove(game);
-            game.MakeMove(move.Item1, move.Item2, 2);
-            spawnImageUnderBorder("Resources/CIRCLE.png", borders[move.Item1, move.Item2]);
+            (int row, int col, int score) bestMove = MinMax(board, AISymbol);
+
+            board[bestMove.row, bestMove.col] = playerTurn ? PlayerSymbol : AISymbol;
+            Border border = borders[bestMove.col, bestMove.row];
+            string imagePath = "Resources/CIRCLE.png";
+            spawnImageUnderBorder(imagePath, border);
+
+            // Check for a win or draw
+            if (CheckWin(board, playerTurn ? PlayerSymbol : AISymbol))
+            {
+                AnnounceWinner(playerTurn ? 1 : -1, false); // Player wins
+            }
+            else if (IsBoardFull(board))
+            {
+                AnnounceWinner(0, true); // Draw
+            }
+
+            playerTurn = !playerTurn;
+            AITurn = false;
+        }
+
+        private (int, int, int) MinMax(char[,] currentBoard, char player, int depth = 0)
+        {
+            int depthLimit = (gameSettings.size == 4) ? 5 : (gameSettings.size == 5) ? 4 : int.MaxValue;
+            if (gameSettings.size == 3) depthLimit = 9;
+
+            // If game over or depth limit reached return the score
+            if (IsGameOver(currentBoard) || depth >= depthLimit)
+            {
+                int score = Evaluate(currentBoard);
+                return (-1, -1, score);
+            }
+
+            List<(int, int, int)> moves = new List<(int, int, int)>();
+
+            for (int row = 0; row < gameSettings.size; row++)
+            {
+                for (int col = 0; col < gameSettings.size; col++)
+                {
+                    if (currentBoard[row, col] == '-')
+                    {
+                        currentBoard[row, col] = player;
+
+                        // Check if the move results in an immediate win or loss
+                        int score = Evaluate(currentBoard);
+                        if (score == 10 || score == -10)
+                        {
+                            currentBoard[row, col] = '-';
+                            return (row, col, score);
+                        }
+
+                        // If not win or loss, use MinMax again
+                        (int, int, int) minmax = MinMax(currentBoard, (player == PlayerSymbol) ? AISymbol : PlayerSymbol, depth + 1);
+
+                        // Dont add invalid move (-1, -1)
+                        if (minmax.Item1 != -1 && minmax.Item2 != -1)
+                        {
+                            moves.Add((row, col, minmax.Item3));
+                        }
+
+                        currentBoard[row, col] = '-';
+                    }
+                }
+            }
+
+            // Choose the best move based on the player
+            if (moves.Count > 0)
+            {
+                var bestMove = player == AISymbol ? moves.OrderByDescending(m => m.Item3).First() : moves.OrderBy(m => m.Item3).First();
+                return (bestMove.Item1, bestMove.Item2, bestMove.Item3);
+            }
+
+            // If no valid moves are found, return 0,0 move
+            return (0, 0, Evaluate(currentBoard));
+        }
+
+
+        private bool IsGameOver(char[,] board)
+        {
+            // Check for a win or draw
+            return CheckWin(board, PlayerSymbol) || CheckWin(board, AISymbol) || IsBoardFull(board);
+        }
+
+        private bool IsBoardFull(char[,] board)
+        {
+            // Check if the board is full
+            for (int row = 0; row < gameSettings.size; row++)
+            {
+                for (int col = 0; col < gameSettings.size; col++)
+                {
+                    if (board[row, col] == '-')
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private bool CheckWin(char[,] board, char player)
+        {
+            int size = gameSettings.size; 
+            int requiredLineLength = 3; // The required line length to win
+
+            // Check for a win horizontally
+            for (int row = 0; row < size; row++)
+            {
+                for (int col = 0; col <= size - requiredLineLength; col++)
+                {
+                    bool winInRow = true;
+                    for (int k = 0; k < requiredLineLength; k++)
+                    {
+                        if (board[row, col + k] != player)
+                        {
+                            winInRow = false;
+                            break;
+                        }
+                    }
+                    if (winInRow)
+                        return true;
+                }
+            }
+
+            // Check for a win vertically
+            for (int col = 0; col < size; col++)
+            {
+                for (int row = 0; row <= size - requiredLineLength; row++)
+                {
+                    bool winInCol = true;
+                    for (int k = 0; k < requiredLineLength; k++)
+                    {
+                        if (board[row + k, col] != player)
+                        {
+                            winInCol = false;
+                            break;
+                        }
+                    }
+                    if (winInCol)
+                        return true;
+                }
+            }
+
+            // Check for a win diagonally (from top-left to bottom-right)
+            for (int row = 0; row <= size - requiredLineLength; row++)
+            {
+                for (int col = 0; col <= size - requiredLineLength; col++)
+                {
+                    bool winInDiagonal1 = true;
+                    for (int k = 0; k < requiredLineLength; k++)
+                    {
+                        if (board[row + k, col + k] != player)
+                        {
+                            winInDiagonal1 = false;
+                            break;
+                        }
+                    }
+                    if (winInDiagonal1)
+                        return true;
+                }
+            }
+
+            // Check for a win diagonally (from top-right to bottom-left)
+            for (int row = 0; row <= size - requiredLineLength; row++)
+            {
+                for (int col = requiredLineLength - 1; col < size; col++)
+                {
+                    bool winInDiagonal2 = true;
+                    for (int k = 0; k < requiredLineLength; k++)
+                    {
+                        if (board[row + k, col - k] != player)
+                        {
+                            winInDiagonal2 = false;
+                            break;
+                        }
+                    }
+                    if (winInDiagonal2)
+                        return true;
+                }
+            }
+
+            // No win condition found
+            return false;
+        }
+
+
+        private int Evaluate(char[,] board)
+        {
+            // Evaluate the board and return a score
+            if (CheckWin(board, AISymbol))
+                return 10;
+            else if (CheckWin(board, PlayerSymbol))
+                return -10;
+            else
+                return 0; // Draw
         }
 
         private void AnnounceWinner(int winner, bool draw)
         {
-            Game g = game;
-            if(winner != 0)
+            string message = "";
+            if (draw)
             {
-                MessageBox.Show("Player " + winner + " won!");
-                game.InitializeBoard();
-                GenerateGridOfLists(borders.GetLength(0));
+                message = "It's a draw!";
             }
-            else if(draw)
+            else
             {
-                MessageBox.Show("Draw!");
-                game.InitializeBoard();
-                GenerateGridOfLists(borders.GetLength(0));
+                message = winner == 1 ? "PLAYER 1 WON" : "PLAYER 2 WON";
             }
 
+            // Spawn the game over screen on the announcement grid as text and button to move back to the main menu
+
+            // Spawn border on the announcement grid
+            Border border = new Border();
+            border.CornerRadius = new CornerRadius(5);
+            border.Background = (Brush)new BrushConverter().ConvertFrom("#456C75");
+            border.Margin = new Thickness(5);
+            border.SetValue(Grid.RowProperty, 0);
+            border.SetValue(Grid.ColumnProperty, 0);
+            border.SetValue(Grid.ColumnSpanProperty, 3);
+            border.SetValue(Grid.RowSpanProperty, 3);
+
+            // Spawn text on the border
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = message;
+            textBlock.FontSize = 24;
+            textBlock.Foreground = (Brush)new BrushConverter().ConvertFrom("#ebb134");
+            textBlock.HorizontalAlignment = HorizontalAlignment.Center;
+            textBlock.VerticalAlignment = VerticalAlignment.Center;
+            border.Child = textBlock;
+
+            // Add the border to the grid
+            gameGrid.Children.Add(border);
+
+            // Add a button to move back to the main menu
+            Button button = new Button();
+            button.Content = "CONFIRM";
+            button.Click += (sender, e) =>
+            {
+                GameFrame.NavigationService.Navigate(new Uri("MainMenu.xaml", UriKind.Relative));
+            };
+
+
+
+            button.SetValue(Grid.RowProperty, 4);
+            button.SetValue(Grid.ColumnProperty, 0);
+            button.SetValue(Grid.RowSpanProperty, 1);
+            button.SetValue(Grid.ColumnSpanProperty, 3);
+            button.Background = (Brush)new BrushConverter().ConvertFrom("#456C75");
+            button.FontSize = 24;
+            button.Foreground = (Brush)new BrushConverter().ConvertFrom("#FFFFFF");
+            button.Margin = new Thickness(5);
+
+            // Add the button to the grid
+            gameGrid.Children.Add(button);
+
+
+
+
+            ResetGame();
         }
 
-        public bool CheckTaken(int y, int x)
+        private void ResetGame()
         {
-            return game.board[y, x] != 0;
+            for (int row = 0; row < gameSettings.size; row++)
+            {
+                for (int col = 0; col < gameSettings.size; col++)
+                {
+                    board[row, col] = '-';
+                    borders[row, col].Child = null;
+                }
+            }
+
+            // Reset player turn
+            playerTurn = true;
         }
+
 
         public static void spawnImageUnderBorder(string path, Border border)
         {
-            // put image CIRCLE in the border as child
+            // put image CIRCLE/CROSS in the border as child
             Image Img = new Image();
             Img.Source = new BitmapImage(new Uri(
                                         "pack://application:,,,/tic-tac-toe;component/"+path));
