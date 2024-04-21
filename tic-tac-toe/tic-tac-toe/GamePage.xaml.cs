@@ -1,21 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using tic_tac_toe.Resources;
-using System.Diagnostics;
 
 namespace tic_tac_toe
 {
@@ -360,8 +346,8 @@ namespace tic_tac_toe
             border.Margin = new Thickness(5);
             border.SetValue(Grid.RowProperty, 0);
             border.SetValue(Grid.ColumnProperty, 0);
-            border.SetValue(Grid.ColumnSpanProperty, 3);
-            border.SetValue(Grid.RowSpanProperty, 3);
+            border.SetValue(Grid.ColumnSpanProperty, 5);
+            border.SetValue(Grid.RowSpanProperty, 5);
 
             // Spawn text on the border
             TextBlock textBlock = new TextBlock();
@@ -388,7 +374,7 @@ namespace tic_tac_toe
             button.SetValue(Grid.RowProperty, 4);
             button.SetValue(Grid.ColumnProperty, 0);
             button.SetValue(Grid.RowSpanProperty, 1);
-            button.SetValue(Grid.ColumnSpanProperty, 3);
+            button.SetValue(Grid.ColumnSpanProperty, 5);
             button.Background = (Brush)new BrushConverter().ConvertFrom("#456C75");
             button.FontSize = 24;
             button.Foreground = (Brush)new BrushConverter().ConvertFrom("#FFFFFF");
